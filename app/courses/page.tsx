@@ -11,7 +11,7 @@ import {
 import { Bell, Mail, MessageSquare } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 const courses = [
@@ -100,7 +100,7 @@ const mentors = [
   },
 ];
 
-export default function CoursesPage() {
+function CoursesContent() {
   const { user } = useUser();
   const searchParams = useSearchParams();
   const searchCategory = searchParams.get("search") || "";
@@ -113,7 +113,9 @@ export default function CoursesPage() {
 
   const filteredCourses = categories.length
     ? courses.filter((c) =>
-        categories.some((cat) => c.category.toLowerCase().includes(cat))
+        categories.some((cat) =>
+          c.category.toLowerCase().includes(cat)
+        )
       )
     : courses;
 
@@ -122,19 +124,18 @@ export default function CoursesPage() {
       <div className="flex">
         <div className="flex-1">
           <div className="p-8">
-            {/* Featured Banner */}
             <div className="bg-gradient-to-r from-indigo-500 to-indigo-700 rounded-xl p-8 mb-12 text-primary-foreground">
               <h1 className="text-4xl font-bold mb-4">
                 Sharpen Your Skills With
                 <br />
                 Professional Online Courses
               </h1>
+
               <Button variant="secondary" className="mt-4">
                 Join Now
               </Button>
             </div>
 
-            {/* Courses */}
             <div>
               <h2 className="text-2xl font-bold mb-6">Courses</h2>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -188,15 +189,15 @@ export default function CoursesPage() {
           </div>
         </div>
 
-        {/* Sidebar */}
+        {/* Right Sidebar */}
         <div className="w-96 flex-shrink-0 border-l min-h-screen sticky top-0 overflow-y-auto max-h-screen scroll-smooth transition-all duration-300">
           <div className="p-10 space-y-8">
-            {/* User */}
+            {/* User Profile */}
             <div className="space-y-4">
               <div className="flex flex-col items-center justify-center gap-4 mb-2">
                 <Link href="/profile">
                   <Image
-                    src={user?.imageUrl || "/default-avatar.png"}
+                    src={user?.imageUrl || ""}
                     alt={user?.fullName || "User"}
                     width={100}
                     height={100}
@@ -204,9 +205,7 @@ export default function CoursesPage() {
                   />
                 </Link>
                 <div className="text-center">
-                  <h2 className="font-semibold text-lg">
-                    Welcome Back {user?.firstName || "User"}!
-                  </h2>
+                  <h2 className="font-semibold text-lg">Welcome Back {user?.firstName || "User"}!</h2>
                   <p className="text-sm text-muted-foreground">
                     Continue Your Journey
                   </p>
@@ -225,7 +224,7 @@ export default function CoursesPage() {
               </div>
             </div>
 
-            {/* Mentor */}
+            {/* Your Mentor */}
             <div>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-semibold">Your Mentor</h2>
@@ -233,6 +232,7 @@ export default function CoursesPage() {
                   See All
                 </Button>
               </div>
+
               <div className="space-y-4">
                 {mentors.map((mentor) => (
                   <div
@@ -265,5 +265,13 @@ export default function CoursesPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CoursesContent />
+    </Suspense>
   );
 }
