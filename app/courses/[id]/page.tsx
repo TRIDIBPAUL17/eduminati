@@ -72,6 +72,7 @@ async function fetchCourseData(id: string): Promise<CourseData | null> {
   }
 }
 
+// The main page component with params passed
 export default async function CourseDetailPage({ params }: { params: { id: string } }) {
   const courseData = await fetchCourseData(params.id);
 
