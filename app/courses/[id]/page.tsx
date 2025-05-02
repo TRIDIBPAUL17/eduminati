@@ -3,14 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import Link from "next/link";
 
-export async function generateStaticParams() {
-  return [
-    { id: '1' },
-    { id: '2' },
-    { id: '3' }
-  ]
-}
-
 const reviews = [
   {
     id: 1,
@@ -20,30 +12,7 @@ const reviews = [
     comment:
       "Loved the course. I've learned some very subtle techniques, especially on leaves.",
   },
-  {
-    id: 2,
-    name: "Titania S",
-    avatar:
-      "https://ui-avatars.com/api/?name=Titania+S&background=random",
-    comment:
-      "Loved the course, it had been a while since I had experimented with watercolors and now I will.",
-  },
-  {
-    id: 3,
-    name: "Zhirkov",
-    avatar:
-      "https://ui-avatars.com/api/?name=Z+K&background=random",
-    comment:
-      "Loved the course. I've learned some very subtle techniques, especially on leaves.",
-  },
-  {
-    id: 4,
-    name: "Miphoska",
-    avatar:
-      "https://ui-avatars.com/api/?name=M+P&background=random",
-    comment:
-      "Loved the course. I've learned some very subtle techniques, especially on leaves.",
-  },
+  // other reviews...
 ];
 
 interface CourseData {
@@ -59,30 +28,29 @@ interface CourseData {
     lessons: {
       title: string;
       videoUrl?: string; 
-    }[];
+    }[]; 
   }[];
   price: string;
 };
 
-export default async function CourseDetailPage() {
-  // Fetch course data server-side
+export async function getServerSideProps({ params }: { params: { id: string } }) {
   let courseData: CourseData;
   
   try {
-    const response = await fetch("http://localhost:3000/api/courseData", { cache: 'no-store' });
+    const response = await fetch("http://localhost:3000/api/courseData");
     if (!response.ok) {
       throw new Error(`Failed to fetch: ${response.status}`);
     }
     
     const result = await response.json();
-    const courseResult = result.result?.find((course: any) => course.id === 1) || result.result?.[0];
+    const courseResult = result.result?.find((course: any) => course.id === params.id);
     
     if (!courseResult) {
       throw new Error("Course not found");
     }
     
     courseData = {
-      id: courseResult.id || 1,
+      id: courseResult.id || params.id,
       title: courseResult.course_name || "Course Name Unavailable",
       instructor: courseResult.course_instructor || "Unknown Instructor",
       description: courseResult.course_description || "No description available",
@@ -101,7 +69,7 @@ export default async function CourseDetailPage() {
     console.error("Error fetching course data:", error);
     // Fallback data if fetch fails
     courseData = {
-      id: "1",
+      id: params.id,
       title: "Course information unavailable",
       instructor: "Unknown",
       description: "Course information could not be loaded",
@@ -111,6 +79,12 @@ export default async function CourseDetailPage() {
     };
   }
 
+  return {
+    props: { courseData }, // Pass fetched data as props to the component
+  };
+}
+
+export default function CourseDetailPage({ courseData }: { courseData: CourseData }) {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -127,7 +101,7 @@ export default async function CourseDetailPage() {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="rounded-lg"
-                ></iframe>
+              ></iframe>
             </div>
 
             {/* Course Title */}
@@ -144,18 +118,14 @@ export default async function CourseDetailPage() {
               />
               <div>
                 <div className="font-medium">{courseData.instructor}</div>
-                <div className="text-sm text-muted-foreground">
-                  DSA Expert
-                </div>
+                <div className="text-sm text-muted-foreground">DSA Expert</div>
               </div>
             </div>
 
             {/* About Course */}
             <div className="mb-8">
               <h2 className="text-xl font-semibold mb-4">About Course</h2>
-              <p className="text-muted-foreground">
-                {courseData.description || "Vue (pronounced /vjuː/, like view) is a progressive framework for building user interfaces. Unlike other monolithic frameworks, Vue is designed from the ground up to be incrementally adoptable. The core library is focused on the view layer only, and is easy to pick up and integrate with other libraries or existing projects. On the other hand, Vue is also perfectly capable of powering sophisticated Single-Page Applications when used in combination with modern tooling and supporting libraries."}
-              </p>
+              <p className="text-muted-foreground">{courseData.description}</p>
             </div>
 
             {/* Reviews */}
@@ -200,7 +170,7 @@ export default async function CourseDetailPage() {
                   </div>
                 </div>
 
-                <div className="space-y-4">         
+                <div className="space-y-4">
                   <Link href="https://buy.stripe.com/test_6oE289fUcgBe5r2fYY" passHref>
                     <Button className="w-full bg-gradient-to-r from-indigo-500 to-indigo-700 hover:shadow-md" size="lg">
                       Buy
@@ -210,27 +180,19 @@ export default async function CourseDetailPage() {
 
                 <div className="mt-6 space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 flex items-center justify-center">
-                      📚
-                    </div>
+                    <div className="w-6 h-6 flex items-center justify-center">📚</div>
                     <div>{courseData.chapters?.length || 0} Sections</div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 flex items-center justify-center">
-                      📝
-                    </div>
+                    <div className="w-6 h-6 flex items-center justify-center">📝</div>
                     <div>{courseData.chapters?.reduce((total, chapter) => total + chapter.lessons.length, 0) || 0} Lectures</div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 flex items-center justify-center">
-                      ⏱️
-                    </div>
+                    <div className="w-6 h-6 flex items-center justify-center">⏱️</div>
                     <div>{courseData.duration || "21h 33m total length"}</div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 flex items-center justify-center">
-                      🌐
-                    </div>
+                    <div className="w-6 h-6 flex items-center justify-center">🌐</div>
                     <div>English</div>
                   </div>
                 </div>
