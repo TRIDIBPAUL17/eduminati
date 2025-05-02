@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
@@ -22,11 +22,9 @@ const courses = [
     instructor: {
       name: "Subhajit S",
       role: "DSA Expert",
-      avatar:
-        "https://ui-avatars.com/api/?name=S+S&background=random",
+      avatar: "https://ui-avatars.com/api/?name=S+S&background=random",
     },
-    thumbnail:
-      "https://images.pexels.com/photos/11035471/pexels-photo-11035471.jpeg",
+    thumbnail: "https://images.pexels.com/photos/11035471/pexels-photo-11035471.jpeg",
   },
   {
     id: 2,
@@ -35,11 +33,9 @@ const courses = [
     instructor: {
       name: "Debargha B",
       role: "Software Developer",
-      avatar:
-        "https://ui-avatars.com/api/?name=D+B&background=random",
+      avatar: "https://ui-avatars.com/api/?name=D+B&background=random",
     },
-    thumbnail:
-      "https://images.pexels.com/photos/4050315/pexels-photo-4050315.jpeg",
+    thumbnail: "https://images.pexels.com/photos/4050315/pexels-photo-4050315.jpeg",
   },
   {
     id: 3,
@@ -48,11 +44,9 @@ const courses = [
     instructor: {
       name: "Tridib P",
       role: "Frontend Developer",
-      avatar:
-        "https://ui-avatars.com/api/?name=T+P&background=random",
+      avatar: "https://ui-avatars.com/api/?name=T+P&background=random",
     },
-    thumbnail:
-      "https://images.pexels.com/photos/3861958/pexels-photo-3861958.jpeg",
+    thumbnail: "https://images.pexels.com/photos/3861958/pexels-photo-3861958.jpeg",
   },
   {
     id: 4,
@@ -61,11 +55,9 @@ const courses = [
     instructor: {
       name: "Anirban B",
       role: "Civil Engineer",
-      avatar:
-        "https://ui-avatars.com/api/?name=A+B&background=random",
+      avatar: "https://ui-avatars.com/api/?name=A+B&background=random",
     },
-    thumbnail:
-      "https://images.pexels.com/photos/3861958/pexels-photo-3861958.jpeg",
+    thumbnail: "https://images.pexels.com/photos/3861958/pexels-photo-3861958.jpeg",
   },
   {
     id: 5,
@@ -74,12 +66,10 @@ const courses = [
     instructor: {
       name: "Ayan B",
       role: "Thermodynamics Expert",
-      avatar:
-        "https://ui-avatars.com/api/?name=A+B&background=random",
+      avatar: "https://ui-avatars.com/api/?name=A+B&background=random",
     },
-    thumbnail:
-      "https://images.pexels.com/photos/3861958/pexels-photo-3861958.jpeg",
-  }
+    thumbnail: "https://images.pexels.com/photos/3861958/pexels-photo-3861958.jpeg",
+  },
 ];
 
 const mentors = [
@@ -115,19 +105,15 @@ export default function CoursesPage() {
   const searchParams = useSearchParams();
   const searchCategory = searchParams.get("search") || "";
   const [index, setIndex] = useState(0);
-  
-  // Split comma-separated categories
+
   const categories = searchCategory
     .split(",")
     .map((cat) => cat.trim().toLowerCase())
     .filter(Boolean);
 
-  // Filter courses if any category is given
   const filteredCourses = categories.length
     ? courses.filter((c) =>
-        categories.some((cat) =>
-          c.category.toLowerCase().includes(cat)
-        )
+        categories.some((cat) => c.category.toLowerCase().includes(cat))
       )
     : courses;
 
@@ -143,13 +129,12 @@ export default function CoursesPage() {
                 <br />
                 Professional Online Courses
               </h1>
-                
               <Button variant="secondary" className="mt-4">
                 Join Now
               </Button>
             </div>
 
-            {/* Continue Watching */}
+            {/* Courses */}
             <div>
               <h2 className="text-2xl font-bold mb-6">Courses</h2>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -203,15 +188,15 @@ export default function CoursesPage() {
           </div>
         </div>
 
-        {/* Right Sidebar */}
+        {/* Sidebar */}
         <div className="w-96 flex-shrink-0 border-l min-h-screen sticky top-0 overflow-y-auto max-h-screen scroll-smooth transition-all duration-300">
           <div className="p-10 space-y-8">
-            {/* User Profile */}
+            {/* User */}
             <div className="space-y-4">
               <div className="flex flex-col items-center justify-center gap-4 mb-2">
                 <Link href="/profile">
                   <Image
-                    src={user?.imageUrl || "User"}
+                    src={user?.imageUrl || "/default-avatar.png"}
                     alt={user?.fullName || "User"}
                     width={100}
                     height={100}
@@ -219,7 +204,9 @@ export default function CoursesPage() {
                   />
                 </Link>
                 <div className="text-center">
-                  <h2 className="font-semibold text-lg">Welcome Back {user?.firstName || "User"}!</h2>
+                  <h2 className="font-semibold text-lg">
+                    Welcome Back {user?.firstName || "User"}!
+                  </h2>
                   <p className="text-sm text-muted-foreground">
                     Continue Your Journey
                   </p>
@@ -238,7 +225,7 @@ export default function CoursesPage() {
               </div>
             </div>
 
-            {/* Your Mentor */}
+            {/* Mentor */}
             <div>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-semibold">Your Mentor</h2>
@@ -246,7 +233,6 @@ export default function CoursesPage() {
                   See All
                 </Button>
               </div>
-
               <div className="space-y-4">
                 {mentors.map((mentor) => (
                   <div
