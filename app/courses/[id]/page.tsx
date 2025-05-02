@@ -1,6 +1,5 @@
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Heart } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const reviews = [
@@ -36,6 +35,7 @@ interface CourseData {
   price: string;
 }
 
+// Function to fetch course data
 async function fetchCourseData(id: string): Promise<CourseData | null> {
   try {
     const response = await fetch("http://localhost:3000/api/courseData");
@@ -47,7 +47,7 @@ async function fetchCourseData(id: string): Promise<CourseData | null> {
     const courseResult = result.result?.find((course: any) => course.id === id);
 
     if (!courseResult) {
-      return null; // Return null if course not found
+      return null;
     }
 
     return {
@@ -72,12 +72,12 @@ async function fetchCourseData(id: string): Promise<CourseData | null> {
   }
 }
 
-// The main page component with params passed
+// Main Course Detail Page Component
 export default async function CourseDetailPage({ params }: { params: { id: string } }) {
-  const courseData = await fetchCourseData(params.id);
+  const courseData = await fetchCourseData(params.id); // Using the dynamic route params
 
   if (!courseData) {
-    return <div>Course not found</div>;
+    return <div>Course not found</div>; // Display message if no course data
   }
 
   return (
