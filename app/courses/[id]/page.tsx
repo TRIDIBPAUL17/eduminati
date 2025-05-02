@@ -7,13 +7,24 @@ const reviews = [
   {
     id: 1,
     name: "Leonardo Da Vinci",
-    avatar:
-      "https://ui-avatars.com/api/?name=L+V&background=random",
+    avatar: "https://ui-avatars.com/api/?name=L+V&background=random",
     comment:
       "Loved the course. I've learned some very subtle techniques, especially on leaves.",
   },
   // other reviews...
 ];
+
+interface Lesson {
+  title: string;
+  videoUrl?: string; 
+}
+
+interface Chapter {
+  title: string;
+  duration: string;
+  totalVideos: string;
+  lessons: Lesson[];
+}
 
 interface CourseData {
   id: string;
@@ -21,36 +32,26 @@ interface CourseData {
   instructor: string;
   description: string;
   duration: string;
-  chapters: {
-    title: string;
-    duration: string;
-    totalVideos: string;
-    lessons: {
-      title: string;
-      videoUrl?: string; 
-    }[]; 
-  }[];
+  chapters: Chapter[];
   price: string;
-};
+}
 
-export async function getServerSideProps({ params }: { params: { id: string } }) {
-  let courseData: CourseData;
-  
+async function fetchCourseData(id: string): Promise<CourseData | null> {
   try {
     const response = await fetch("http://localhost:3000/api/courseData");
     if (!response.ok) {
       throw new Error(`Failed to fetch: ${response.status}`);
     }
-    
+
     const result = await response.json();
-    const courseResult = result.result?.find((course: any) => course.id === params.id);
-    
+    const courseResult = result.result?.find((course: any) => course.id === id);
+
     if (!courseResult) {
-      throw new Error("Course not found");
+      return null; // Return null if course not found
     }
-    
-    courseData = {
-      id: courseResult.id || params.id,
+
+    return {
+      id: courseResult.id || id,
       title: courseResult.course_name || "Course Name Unavailable",
       instructor: courseResult.course_instructor || "Unknown Instructor",
       description: courseResult.course_description || "No description available",
@@ -67,24 +68,17 @@ export async function getServerSideProps({ params }: { params: { id: string } })
     };
   } catch (error) {
     console.error("Error fetching course data:", error);
-    // Fallback data if fetch fails
-    courseData = {
-      id: params.id,
-      title: "Course information unavailable",
-      instructor: "Unknown",
-      description: "Course information could not be loaded",
-      duration: "N/A",
-      chapters: [],
-      price: "N/A",
-    };
+    return null;
   }
-
-  return {
-    props: { courseData }, // Pass fetched data as props to the component
-  };
 }
 
-export default function CourseDetailPage({ courseData }: { courseData: CourseData }) {
+export default async function CourseDetailPage({ params }: { params: { id: string } }) {
+  const courseData = await fetchCourseData(params.id);
+
+  if (!courseData) {
+    return <div>Course not found</div>;
+  }
+
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -111,7 +105,7 @@ export default function CourseDetailPage({ courseData }: { courseData: CourseDat
             <div className="flex items-center gap-4 mb-8">
               <Image
                 src="https://ui-avatars.com/api/?name=S+S&background=random"
-                alt="Subhajit Srimani"
+                alt="Instructor Avatar"
                 width={48}
                 height={48}
                 className="rounded-full"
