@@ -39,7 +39,7 @@ interface CourseData {
 async function fetchCourseData(id: string): Promise<CourseData | null> {
   try {
     const response = await fetch("http://localhost:3000/api/courseData", {
-      cache: "no-store", // important for SSR
+      cache: "no-store",
     });
     const result = await response.json();
     const course = result.result?.find((course: any) => course.id === id);
@@ -68,9 +68,10 @@ async function fetchCourseData(id: string): Promise<CourseData | null> {
   }
 }
 
-// ✅ Correct typing: not constrained
-export default async function CoursePage({ params }: { params: { id: string } }) {
-  const courseData = await fetchCourseData(params.id);
+export default async function CoursePage() {
+  // ✅ Hardcoded ID
+  const courseId = "1";
+  const courseData = await fetchCourseData(courseId);
 
   if (!courseData) {
     return <div className="p-8 text-red-600 text-xl">Course not found.</div>;
